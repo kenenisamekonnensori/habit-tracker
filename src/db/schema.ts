@@ -1,4 +1,5 @@
 
+import { relations } from 'drizzle-orm';
 import {
     pgTable,
     uuid,
@@ -54,3 +55,38 @@ export const habitsTags = pgTable('habits_tags', {
     tagId: uuid('tag_id').references(() => tags.id, {onDelete: 'cascade'}).notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
 })
+
+export const userRelationships = relations(users, ({many}) => ({
+    habits: many(habits),
+}))
+
+export const habitsRelationships = relations(habits, ({one, many}) => ({
+    user: one(users, {
+        fields: [habits.userId],
+        references: [users.id],
+    }),
+    entries: many(enteries),
+    habitsTags: many(habitsTags),
+}))
+
+export const entriesRelationships = relations(enteries, ({one}) => ({
+    habits: one(habits, {
+        fields: [enteries.habitId],
+        references: [habits.id],
+    })
+}))
+
+export const tagsRelationships = relations(tags, ({many}) => ({
+    habitsTags: many(habitsTags),
+}))
+
+export const habitsTagsRelationships = relations(habitsTags, ({one}) => ({
+    habit: one(habits, {
+        fields: [habitsTags.habitId],
+        references: [habits.id],
+    }),
+    tag: one(tags, {
+        fields: [habitsTags.tagId],
+        references: [tags.id],
+    })
+}))
