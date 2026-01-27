@@ -1,5 +1,6 @@
 
 import { relations } from 'drizzle-orm';
+import { createSelectSchema, createInsertSchema } from 'drizzle-zod';
 import {
     pgTable,
     uuid,
@@ -90,3 +91,13 @@ export const habitsTagsRelationships = relations(habitsTags, ({one}) => ({
         references: [tags.id],
     })
 }))
+
+
+export type User = typeof users.$inferSelect;
+export type Habits = typeof habits.$inferSelect;
+export type Entry = typeof enteries.$inferSelect;
+export type Tag = typeof tags.$inferSelect;
+export type HabitsTags = typeof habitsTags.$inferSelect;
+
+export const createUserSchema = createInsertSchema(users);
+export const selectUserSchema = createInsertSchema(users);
