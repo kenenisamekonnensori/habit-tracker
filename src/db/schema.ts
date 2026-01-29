@@ -37,9 +37,9 @@ export const habits = pgTable('habits', {
 export const enteries = pgTable('entries', {
     id: uuid('id').primaryKey().defaultRandom().notNull(),
     habitId: uuid('habit_id').references(() => habits.id, {onDelete: 'cascade'}).notNull(),
-   conplationDate: timestamp('completion_date').notNull(),
-   createdAt: timestamp('created_at').defaultNow().notNull(),
-   note: text('note'),
+    completionDate: timestamp('completion_date').notNull().defaultNow(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    note: text('note'),
 })
 
 export const tags = pgTable('tags', {
@@ -94,10 +94,11 @@ export const habitsTagsRelationships = relations(habitsTags, ({one}) => ({
 
 
 export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
 export type Habits = typeof habits.$inferSelect;
 export type Entry = typeof enteries.$inferSelect;
 export type Tag = typeof tags.$inferSelect;
 export type HabitsTags = typeof habitsTags.$inferSelect;
 
-export const createUserSchema = createInsertSchema(users);
-export const selectUserSchema = createInsertSchema(users);
+export const insertUserSchema = createInsertSchema(users);
+export const selectUserSchema = createSelectSchema(users);

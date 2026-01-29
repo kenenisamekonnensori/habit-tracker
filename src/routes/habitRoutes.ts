@@ -1,9 +1,14 @@
 import { Router } from 'express';
-import { validateBody } from '../middleware/validation.js';
+import { validateBody } from '../middleware/validation.ts';
+import { validateParams } from '../middleware/validation.ts';
 import { z } from 'zod';
 
 const habitSchema = z.object({
     name: z.string(),
+})
+
+const completeParamShema = z.object({
+    id: z.string().min(3)
 })
 
 const router = Router();
@@ -24,7 +29,7 @@ router.delete('/:id', (req, res) => {
     res.json({ message: "deleted one habit" })
 })
 
-router.post('/:id/complete', (req, res) => {
+router.post('/:id/complete', validateParams(completeParamShema), validateBody(habitSchema), (req, res) => {
     res.json({ message: "completed one habit" })
 });
 
