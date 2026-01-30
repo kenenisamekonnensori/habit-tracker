@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { validateBody } from '../middleware/validation.ts';
 import { validateParams } from '../middleware/validation.ts';
 import { z } from 'zod';
+import { authenticate } from '../middleware/auth.ts';
 
 const habitSchema = z.object({
     name: z.string(),
@@ -13,12 +14,13 @@ const completeParamShema = z.object({
 
 const router = Router();
 
+router.use(authenticate);
 router.get('/', (req, res) => {
     res.json({ message: "habits" })
 })
 
 router.get('/:id', (req, res) => {
-    res.json({ message: "got one habits" })
+    res.json({ message: `got one habit ${req.params.id}` })
 })
 
 router.post('/', validateBody(habitSchema),  (req, res) => {
