@@ -3,6 +3,7 @@ import { validateBody } from '../middleware/validation.ts';
 import { validateParams } from '../middleware/validation.ts';
 import { z } from 'zod';
 import { authenticate } from '../middleware/auth.ts';
+import { createHabits } from '../controllers/habitControlller.ts';
 
 const habitSchema = z.object({
     name: z.string(),
@@ -23,9 +24,7 @@ router.get('/:id', (req, res) => {
     res.json({ message: `got one habit ${req.params.id}` })
 })
 
-router.post('/', validateBody(habitSchema),  (req, res) => {
-    res.json({ message: "created habits" })
-})
+router.post('/',, createHabits);
 
 router.delete('/:id', (req, res) => {
     res.json({ message: "deleted one habit" })

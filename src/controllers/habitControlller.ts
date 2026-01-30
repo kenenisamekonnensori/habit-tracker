@@ -45,3 +45,43 @@ export const createHabits = async (
         })
     }
 }
+
+export const getAllHabits = async (
+    req: AuthenticatedRequest,
+    res: Response
+) => {
+    try {
+
+        const userHabitsWithTags = await db.query.habits.findMany({
+            where: eq(habits.userId, req.user.id),
+            with: {
+                habitsTags: {
+                    with: {
+                        tag: true,
+                    }
+                }
+            },
+
+            orderBy: [
+                desc(habits.createdAt)
+            ]
+        })
+
+        const habitsWithTags = userHabitsWithTags.map(habit => ({
+            ...habit,
+            tags: habit.habitsTags.map(ht => ht.tag),
+            habitsTags: undefined,
+        }))
+
+        res.status(200).json({
+            message: "User habits fetched successfully",
+            habits: habitsWithTags
+        })
+
+    } catch (error) {
+        console.error("Error fetching habits: ", error);
+        res.status(500).json({
+            error: "Internal server error"
+        })
+    }
+}
