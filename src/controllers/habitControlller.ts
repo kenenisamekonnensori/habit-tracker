@@ -85,3 +85,51 @@ export const getAllHabits = async (
         })
     }
 }
+
+export const updatedHabit = async (
+    req: AuthenticatedRequest,
+    res: Response
+) => {
+    try {
+        const id = req.params.id;
+        const { tagId, ...updates } = req.body;
+
+        const result = await db.transaction(async (tx) => {
+            const [updatedhabit] = await tx
+                .update(habits)
+                .set({ ...updates, updatedAt: new Date() })
+                .where(and(eq(habits.id, id), eq(habits.userId, req.user.id)))
+                .returning();
+
+            if (!updatedhabit) {
+                return res.status(401).end();
+            }
+
+            if (tagId != undefined) {
+                await tx.delete(habitsTags).where(eq(habitsTags.habitId, id));
+
+                if (tagId.length > 0) {
+                    const habitTagValues = tagId.map(( tagId) => ({
+                        habitId: id,
+                        tagId,
+                    }))
+
+                    await tx.insert(habitsTags).values(habitTagValues);
+                }
+            }
+
+            return updatedhabit;
+        })
+
+        res.status(201).json({
+            message: "Habit updated successfully",
+            habit: result,
+        })
+        
+    } catch (error) {
+        console.error("Error updating habit: ", error);
+        res.status(500).json({
+            error: "Internal server error"
+        })
+    }
+}
