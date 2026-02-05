@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config.js'
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
@@ -9,11 +9,8 @@ export default defineConfig({
     restoreMocks: true,
     // Ensure tests run sequentially to avoid database conflicts
     pool: 'threads',
-    poolOptions: {
-      threads: {
-        singleThread: true
-      }
-    }
+    maxWorkers: 1,
+    fileParallelism: false
   },
   plugins: [],
 })
